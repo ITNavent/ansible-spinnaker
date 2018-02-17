@@ -1,0 +1,9 @@
+---
+- name: Add spinnaker apt key
+  apt_key: url="https://bintray.com/user/downloadSubjectPublicKey?username=spinnaker"
+
+- name: Add spinnaker apt repository
+  apt_repository: repo="deb https://dl.bintray.com/spinnaker/debians trusty spinnaker"
+
+- name: Install spinnaker
+  apt: name=spinnaker update_cache=yes

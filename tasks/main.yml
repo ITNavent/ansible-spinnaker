@@ -1,0 +1,46 @@
+---
+- include: install/java.yml
+  when: spinnaker_install
+
+- include: install/cassandra.yml
+  when: spinnaker_install and spinnaker_cassandra_local
+
+- include: install/redis.yml
+  when: spinnaker_install and spinnaker_redis_local
+
+- include: install/packer.yml
+  when: spinnaker_install
+
+- include: install/spinnaker.yml
+  when: spinnaker_install
+
+- name: Copy default spinnaker config if one does not exist
+  command: creates="/opt/spinnaker/config/spinnaker-local.yml" cp /opt/spinnaker/config/default-spinnaker-local.yml /opt/spinnaker/config/spinnaker-local.yml
+
+- name: Configure spinnaker
+  template: src=spinnaker-local.yml dest=/opt/spinnaker/config/spinnaker-local.yml
+  notify: restart spinnaker
+  when: "spinnaker_config is defined"
+
+- name: Configure spinnaker environment variables
+  template: src=spinnaker-environment dest=/etc/default/spinnaker
+  notify: restart spinnaker
+  when: "spinnaker_environment is defined"
+
+- name: Configure spinnaker services
+  template: src={{ item }}-local.yml dest=/opt/spinnaker/config/{{ item }}-local.yml
+  notify: restart spinnaker
+  when: "spinnaker_config_{{ item }} is defined"
+  with_items:
+    - clouddriver
+    - echo
+    - gate
+    - igor
+    - orca
+    - fiat
+    - rosco
+    - front50
+
+- name: Add cron job to backup cassandra
+  cron: name="spinnaker cassandra backup" special_time="daily" job='su - root -c "/opt/spinnaker/pylib/spinnaker/import_export.py --cloud aws --bucket {{ spinnaker_backup_bucket }} --mode export"'
+  when: spinnaker_backup == True

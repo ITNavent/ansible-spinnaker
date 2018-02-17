@@ -1,0 +1,17 @@
+---
+- name: Add redis apt repository
+  apt_repository: repo="ppa:chris-lea/redis-server"
+
+- name: Install redis
+  apt: name=redis-server
+
+- name: Create redis config directory
+  file: path=/opt/redis state=directory
+
+- name: Copy local redis config file
+  copy: src=redis.conf dest=/opt/redis/redis.conf
+  notify: restart redis
+
+- name: Point redis to local config file
+  lineinfile: dest=/etc/redis/redis.conf regexp="include /" line="include /opt/redis/redis.conf"
+  notify: restart redis
