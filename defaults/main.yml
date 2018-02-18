@@ -6,3 +6,28 @@ spinnaker_cassandra_local: True
 spinnaker_cassandra_version: 2.1.11
 spinnaker_redis_local: True
 spinnaker_packer_version: 0.12.1
+
+spinnaker_apache2_ports: |
+  Listen 0.0.0.0:9000
+
+  <IfModule ssl_module>
+          Listen 443
+  </IfModule>
+
+  <IfModule mod_gnutls.c>
+          Listen 443
+  </IfModule>
+
+spinnaker_apache2_spinnaker: |
+  <VirtualHost 0.0.0.0:9000>
+    <IfModule ssl_module>
+      SSLEngine on
+      SSLCertificateFile ""
+      SSLCertificateKeyFile ""
+    </IfModule>
+    DocumentRoot /opt/deck/html
+
+    <Directory "/opt/deck/html/">
+       Require all granted
+    </Directory>
+  </VirtualHost>
