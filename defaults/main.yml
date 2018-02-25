@@ -5,7 +5,9 @@ spinnaker_backup_bucket: ""
 spinnaker_cassandra_local: True
 spinnaker_cassandra_version: 2.1.11
 spinnaker_redis_local: True
+
 spinnaker_packer_version: 0.12.1
+spinnaker_packer_config_dir: /opt/rosco/config/packer
 
 spinnaker_apache2_ports: |
   Listen 0.0.0.0:9000

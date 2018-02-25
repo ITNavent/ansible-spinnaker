@@ -16,3 +16,6 @@
 - name: Install packer
   unarchive: src=/tmp/packer_{{ spinnaker_packer_version }}_linux_amd64.zip dest=/usr/bin copy=no
   when: '"Packer v{{spinnaker_packer_version}}" not in current_packer_version.stdout'
+
+- name: Create packer config folder
+  file: path={{ spinnaker_packer_config_dir }} state=directory
